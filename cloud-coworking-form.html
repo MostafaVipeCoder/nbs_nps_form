@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Coworking — استبيان التقييم</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #0EA5E9;
+    --sky-dark: #0284C7;
+    --sky-light: #E0F2FE;
+    --cloud: #F8FAFC;
+    --ink: #0F172A;
+    --ink-soft: #334155;
+    --ink-muted: #64748B;
+    --border: #CBD5E1;
+    --border-light: #E2E8F0;
+    --gold: #F59E0B;
+    --green: #10B981;
+    --red: #EF4444;
+    --surface: #FFFFFF;
+    --radius: 16px;
+    --shadow: 0 4px 24px rgba(14,165,233,0.10);
+    --shadow-lg: 0 12px 40px rgba(14,165,233,0.18);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 40%, #ECFDF5 100%);
+    min-height: 100vh;
+    color: var(--ink);
+    padding: 20px;
+  }
+
+  /* BG decoration */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(14,165,233,0.08) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -150px; right: -150px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .wrapper {
+    max-width: 780px;
+    margin: 0 auto;
+    position: relative; z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    padding: 48px 32px 40px;
+    background: var(--surface);
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 24px;
+    border: 1px solid rgba(14,165,233,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--sky), #38BDF8, var(--green));
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .logo-icon {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    box-shadow: 0 6px 20px rgba(14,165,233,0.35);
+  }
+  .logo-text {
+    text-align: right;
+  }
+  .logo-text h1 {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--sky-dark);
+    line-height: 1;
+  }
+  .logo-text span {
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-weight: 400;
+  }
+  .header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .header p {
+    color: var(--ink-muted);
+    font-size: 15px;
+    font-family: 'Tajawal', sans-serif;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+  .header-badges {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 18px;
+  }
+  .badge {
+    background: var(--sky-light);
+    color: var(--sky-dark);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge.green { background: #D1FAE5; color: #059669; }
+
+  /* SECTION CARD */
+  .section-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-light);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+  }
+  .section-card:hover { box-shadow: var(--shadow-lg); }
+
+  .section-header {
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .section-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .section-title h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .section-title p {
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-family: 'Tajawal', sans-serif;
+    margin-top: 2px;
+  }
+  .section-body { padding: 24px 28px; }
+
+  /* NPS SCORE */
+  .nps-question {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+  .nps-subtitle {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-bottom: 24px;
+    font-family: 'Tajawal', sans-serif;
+  }
+  .nps-scale {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .nps-btn {
+    width: 52px; height: 52px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--cloud);
+    font-size: 17px;
+    font-weight: 700;
+    font-family: 'Cairo', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nps-btn:hover { border-color: var(--sky); background: var(--sky-light); transform: translateY(-2px); }
+  .nps-btn.selected-detractor { border-color: var(--red); background: #FEF2F2; color: var(--red); transform: scale(1.1); }
+  .nps-btn.selected-passive { border-color: var(--gold); background: #FFFBEB; color: #B45309; transform: scale(1.1); }
+  .nps-btn.selected-promoter { border-color: var(--green); background: #ECFDF5; color: #059669; transform: scale(1.1); }
+
+  .nps-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--ink-muted);
+    padding: 0 4px;
+    font-family: 'Tajawal', sans-serif;
+  }
+  .nps-labels span:first-child { color: var(--red); }
+  .nps-labels span:last-child { color: var(--green); }
+
+  /* RATING ROWS */
+  .rating-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-light);
+    gap: 12px;
+  }
+  .rating-row:last-child { border-bottom: none; }
+  .rating-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    flex: 1;
+    min-width: 0;
+  }
+  .stars {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .star {
+    width: 36px; height: 36px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: var(--cloud);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Cairo', sans-serif;
+    color: var(--ink-muted);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .star:hover { border-color: var(--gold); background: #FFFBEB; }
+  .star.active {
+    border-color: var(--gold);
+    background: var(--gold);
+    color: white;
+    transform: scale(1.08);
+  }
+
+  /* TEXT AREAS */
+  .open-q {
+    margin-bottom: 20px;
+  }
+  .open-q:last-child { margin-bottom: 0; }
+  .open-q label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+  .open-q label span {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ink-muted);
+    font-family: 'Tajawal', sans-serif;
+    margin-top: 3px;
+  }
+  .open-q textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    resize: vertical;
+    min-height: 90px;
+    transition: border-color 0.2s;
+    background: var(--cloud);
+    line-height: 1.7;
+    direction: rtl;
+  }
+  .open-q textarea:focus {
+    outline: none;
+    border-color: var(--sky);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(14,165,233,0.08);
+  }
+  .open-q textarea::placeholder { color: #94A3B8; }
+
+  /* VALUE PRICE SLIDER */
+  .value-price {
+    margin-top: 16px;
+  }
+  .value-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .value-row label {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    min-width: 280px;
+  }
+
+  /* SUBMIT BUTTON */
+  .submit-area {
+    text-align: center;
+    padding: 32px 0 20px;
+  }
+  .submit-btn {
+    background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+    color: white;
+    border: none;
+    padding: 18px 56px;
+    border-radius: 14px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(14,165,233,0.4);
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(14,165,233,0.5);
+  }
+  .submit-btn:active { transform: translateY(0); }
+
+  /* SUCCESS */
+  .success-screen {
+    display: none;
+    background: var(--surface);
+    border-radius: 24px;
+    padding: 60px 32px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+  }
+  .success-screen.show { display: block; }
+  .success-icon { font-size: 64px; margin-bottom: 20px; }
+  .success-screen h3 { font-size: 26px; font-weight: 700; color: var(--green); margin-bottom: 12px; }
+  .success-screen p { font-size: 15px; color: var(--ink-muted); font-family: 'Tajawal', sans-serif; line-height: 1.8; }
+
+  /* COLORS FOR SECTION ICONS */
+  .ic-internet { background: #EFF6FF; }
+  .ic-chair { background: #FFF7ED; }
+  .ic-vibe { background: #F0FDF4; }
+  .ic-staff { background: #FDF4FF; }
+  .ic-food { background: #FFFBEB; }
+  .ic-clean { background: #ECFDF5; }
+  .ic-nps { background: linear-gradient(135deg, #EFF6FF, #E0F2FE); }
+
+  .form-container { transition: opacity 0.3s; }
+  .form-container.hidden { opacity: 0; pointer-events: none; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .section-body { padding: 16px 18px; }
+    .section-header { padding: 16px 18px; }
+    .nps-btn { width: 40px; height: 40px; font-size: 14px; }
+    .star { width: 30px; height: 30px; font-size: 12px; }
+    .rating-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .value-row { flex-direction: column; align-items: flex-start; }
+    .value-row label { min-width: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">☁️</div>
+      <div class="logo-text">
+        <h1>Cloud Coworking</h1>
+        <span>مساحة العمل المشترك</span>
+      </div>
+    </div>
+    <h2>شاركنا تجربتك 🎯</h2>
+    <p>رأيك يبني تجربة أفضل لك ولزملائك. يستغرق هذا الاستبيان أقل من 3 دقائق.</p>
+    <div class="header-badges">
+      <div class="badge">⭐ NPS Score</div>
+      <div class="badge green">📊 NBS Analysis</div>
+      <div class="badge">🔒 سري وآمن</div>
+    </div>
+  </div>
+
+  <div class="form-container" id="formContainer">
+    <form id="surveyForm">
+
+      <!-- NPS SECTION -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon ic-nps">🎯</div>
+          <div class="section-title">
+            <h3>مؤشر الولاء — NPS</h3>
+            <p>Net Promoter Score</p>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="nps-question">ما مدى احتمالية أن توصي بمساحة Cloud Coworking لصديق أو زميل؟</div>
+          <div class="nps-subtitle">0 = لن أوصي إطلاقاً &nbsp;|&nbsp; 10 = أوصي بشدة</div>
+          <div class="nps-scale" id="npsScale">
+            <!-- Generated by JS -->
+          </div>
+          <div class="nps-labels">
+            <span>😞 لن أوصي أبداً</span>
+            <span>😍 أوصي بشدة</span>
+          </div>
+          <input type="hidden" name="nps" id="npsValue">
+        </div>
+      </div>
+
+      <!-- INTERNET -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon ic-internet">📡</div>
+          <div class="section-title"><h3>جودة الإنترنت</h3><p>قيّم من 1 (سيء جداً) إلى 5 (ممتاز)</p></div>
+        </div>
+        <div class="section-body">
+          <div id="internet-ratings"></div>
+        </div>
+      </div>
+
+      <!-- CHAIRS -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon ic-chair">🪑</div>
+          <div class="section-title"><h3>الكراسي والطاولات</h3><p>قيّم من 1 إلى 5</p></div>
+        </div>
+        <div class="section-body">
+          <div id="chairs-ratings"></div>
+        </div>
+      </div>
+
+      <!-- VIBE -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon ic-vibe">🌿</div>
+          <div class="section-title"><h3>أجواء المكان</h3><p>قيّم من 1 إلى 5</p></div>
+        </div>
+        <div class="section-body">
+          <div id="vibe-ratings"></div>
+        </div>
+      </div>
+
+      <!-- STAFF -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon ic-staff">👨‍💼</div>
+          <div class="section-title"><h3>موظف خدمة العملاء</h3><p>قيّم من 1 إلى 5</p></div>
+        </div>
+        <div class="section-body">
+          <div id="staff-ratings"></div>
+        </div>
+      </div>
+
+      <!-- CATERING -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon ic-food">☕</div>
+          <div class="section-title"><h3>الكاترينج والسناكس</h3><p>قيّم من 1 إلى 5</p></div>
+        </div>
+        <div class="section-body">
+          <div id="catering-ratings"></div>
+        </div>
+      </div>
+
+      <!-- CLEANLINESS -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon ic-clean">✨</div>
+          <div class="section-title"><h3>نظافة المكان</h3><p>قيّم من 1 إلى 5</p></div>
+        </div>
+        <div class="section-body">
+          <div id="clean-ratings"></div>
+        </div>
+      </div>
+
+      <!-- VALUE PERCEPTION -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon" style="background:#FFF1F2;">💎</div>
+          <div class="section-title"><h3>القيمة مقابل السعر</h3><p>سؤال استراتيجي مهم</p></div>
+        </div>
+        <div class="section-body">
+          <div class="value-price">
+            <div class="rating-row">
+              <div class="rating-label">هل ترى أن السعر مناسب مقابل القيمة المقدمة؟</div>
+              <div class="stars" id="valueStars" data-group="value" data-key="value_price"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPEN QUESTIONS -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon" style="background:#F8F0FF;">💬</div>
+          <div class="section-title"><h3>أسئلة مفتوحة</h3><p>رأيك يفرق كثيراً</p></div>
+        </div>
+        <div class="section-body">
+          <div class="open-q">
+            <label>✅ ما أكثر شيء أعجبك في المكان؟
+              <span>شاركنا ما يميز تجربتك معنا</span>
+            </label>
+            <textarea name="liked_most" placeholder="اكتب هنا..."></textarea>
+          </div>
+          <div class="open-q">
+            <label>🔧 ما أكثر شيء يحتاج إلى تحسين؟
+              <span>صراحتك تساعدنا نتحسن</span>
+            </label>
+            <textarea name="needs_improvement" placeholder="اكتب هنا..."></textarea>
+          </div>
+          <div class="open-q">
+            <label>👔 لو كنت المدير، ما أول قرار ستتخذه لتحسين التجربة؟
+              <span>فكّر معنا كمدير استراتيجي</span>
+            </label>
+            <textarea name="if_manager" placeholder="اكتب هنا..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="submit-area">
+        <button type="submit" class="submit-btn">
+          إرسال التقييم ✈️
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">🎉</div>
+    <h3>شكراً جزيلاً!</h3>
+    <p>تم إرسال تقييمك بنجاح.<br>رأيك يساعدنا على تقديم تجربة أفضل كل يوم.</p>
+  </div>
+</div>
+
+<script>
+// ============ DATA STRUCTURE ============
+const sections = {
+  internet: {
+    items: ['سرعة الإنترنت', 'استقرار الاتصال', 'توفر بديل عند الانقطاع']
+  },
+  chairs: {
+    items: ['راحة الكراسي', 'ملاءمة الطاولات للعمل الطويل', 'توزيع أماكن الجلوس']
+  },
+  vibe: {
+    items: ['الهدوء', 'الإضاءة', 'التهوية', 'مستوى الإزعاج']
+  },
+  staff: {
+    items: ['سرعة الاستجابة', 'الاحترافية', 'حل المشكلات', 'التعامل واللباقة']
+  },
+  catering: {
+    items: ['تنوع المشروبات', 'تنوع الوجبات الخفيفة', 'جودة المنتجات', 'مناسبة السعر مقابل الجودة', 'وضوح التسعير']
+  },
+  clean: {
+    items: ['نظافة المكاتب', 'نظافة دورات المياه', 'نظافة مناطق الكاترينج', 'النظافة العامة']
+  }
+};
+
+// ============ BUILD NPS ============
+const npsScale = document.getElementById('npsScale');
+for (let i = 0; i <= 10; i++) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'nps-btn';
+  btn.textContent = i;
+  btn.dataset.val = i;
+  btn.onclick = function() {
+    document.querySelectorAll('.nps-btn').forEach(b => {
+      b.className = 'nps-btn';
+    });
+    const v = parseInt(this.dataset.val);
+    this.className = 'nps-btn ' + (v <= 6 ? 'selected-detractor' : v <= 8 ? 'selected-passive' : 'selected-promoter');
+    document.getElementById('npsValue').value = v;
+  };
+  npsScale.appendChild(btn);
+}
+
+// ============ BUILD STAR RATINGS ============
+function buildStars(containerId, sectionKey) {
+  const container = document.getElementById(containerId);
+  const items = sections[sectionKey].items;
+  items.forEach((item, idx) => {
+    const row = document.createElement('div');
+    row.className = 'rating-row';
+    const label = document.createElement('div');
+    label.className = 'rating-label';
+    label.textContent = item;
+    const stars = document.createElement('div');
+    stars.className = 'stars';
+    stars.dataset.group = sectionKey;
+    stars.dataset.key = `${sectionKey}_${idx}`;
+    stars.dataset.value = '0';
+    for (let i = 1; i <= 5; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.textContent = i;
+      s.dataset.val = i;
+      s.onclick = function() {
+        const val = parseInt(this.dataset.val);
+        const group = this.closest('.stars');
+        group.dataset.value = val;
+        group.querySelectorAll('.star').forEach((st, si) => {
+          st.className = 'star' + (si < val ? ' active' : '');
+        });
+      };
+      stars.appendChild(s);
+    }
+    row.appendChild(label);
+    row.appendChild(stars);
+    container.appendChild(row);
+  });
+}
+
+buildStars('internet-ratings', 'internet');
+buildStars('chairs-ratings', 'chairs');
+buildStars('vibe-ratings', 'vibe');
+buildStars('staff-ratings', 'staff');
+buildStars('catering-ratings', 'catering');
+buildStars('clean-ratings', 'clean');
+
+// Build value stars
+const valueStarsContainer = document.getElementById('valueStars');
+valueStarsContainer.dataset.value = '0';
+for (let i = 1; i <= 5; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.textContent = i;
+  s.dataset.val = i;
+  s.onclick = function() {
+    const val = parseInt(this.dataset.val);
+    valueStarsContainer.dataset.value = val;
+    valueStarsContainer.querySelectorAll('.star').forEach((st, si) => {
+      st.className = 'star' + (si < val ? ' active' : '');
+    });
+  };
+  valueStarsContainer.appendChild(s);
+}
+
+// ============ COLLECT DATA ============
+function collectData() {
+  const data = {};
+  // NPS
+  data.nps = parseInt(document.getElementById('npsValue').value) || null;
+  // Ratings per section
+  document.querySelectorAll('.stars').forEach(group => {
+    data[group.dataset.key] = parseInt(group.dataset.value) || 0;
+  });
+  // Open questions
+  data.liked_most = document.querySelector('[name="liked_most"]').value;
+  data.needs_improvement = document.querySelector('[name="needs_improvement"]').value;
+  data.if_manager = document.querySelector('[name="if_manager"]').value;
+  data.timestamp = new Date().toISOString();
+  data.month = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long' });
+  return data;
+}
+
+// ============ SUBMIT (Google Sheets ready) ============
+document.getElementById('surveyForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const data = collectData();
+  if (data.nps === null) {
+    alert('من فضلك اختر تقييم NPS أولاً');
+    return;
+  }
+
+  /* ---- GOOGLE SHEETS INTEGRATION ----
+     Replace the SCRIPT_URL below with your Google Apps Script Web App URL
+     The Apps Script should accept POST with JSON body
+  */
+  const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+  
+  try {
+    // Attempt to send to Google Sheets
+    if (SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        mode: 'no-cors'
+      });
+    }
+  } catch (err) {
+    console.log('Submission logged locally:', data);
+  }
+
+  // Store in localStorage for dashboard
+  const existing = JSON.parse(localStorage.getItem('survey_responses') || '[]');
+  existing.push(data);
+  localStorage.setItem('survey_responses', JSON.stringify(existing));
+
+  console.log('Survey Data:', JSON.stringify(data, null, 2));
+
+  document.getElementById('formContainer').classList.add('hidden');
+  setTimeout(() => {
+    document.getElementById('successScreen').classList.add('show');
+  }, 300);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Coworking — Analytics Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --sky: #0EA5E9;
+  --sky-dark: #0284C7;
+  --sky-light: #E0F2FE;
+  --ink: #0F172A;
+  --ink-soft: #334155;
+  --ink-muted: #64748B;
+  --border: #E2E8F0;
+  --surface: #FFFFFF;
+  --cloud: #F8FAFC;
+  --green: #10B981;
+  --green-light: #D1FAE5;
+  --red: #EF4444;
+  --red-light: #FEF2F2;
+  --gold: #F59E0B;
+  --gold-light: #FFFBEB;
+  --purple: #8B5CF6;
+  --purple-light: #F5F3FF;
+  --radius: 16px;
+  --shadow: 0 2px 16px rgba(15,23,42,0.06);
+  --shadow-lg: 0 8px 32px rgba(15,23,42,0.10);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background: #0F172A;
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: 0; right: 0;
+  width: 260px;
+  height: 100vh;
+  background: #1E293B;
+  border-left: 1px solid #334155;
+  padding: 28px 20px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 12px 24px;
+  border-bottom: 1px solid #334155;
+  margin-bottom: 12px;
+}
+.sidebar-logo-icon {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.sidebar-logo h1 { font-size: 15px; font-weight: 700; color: #F1F5F9; line-height: 1.2; }
+.sidebar-logo span { font-size: 11px; color: #64748B; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #94A3B8;
+  transition: all 0.2s;
+}
+.nav-item:hover { background: #334155; color: #E2E8F0; }
+.nav-item.active { background: rgba(14,165,233,0.15); color: var(--sky); }
+.nav-item .nav-icon { font-size: 16px; width: 22px; text-align: center; }
+
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #475569;
+  padding: 16px 14px 6px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid #334155;
+}
+.data-status {
+  background: #0F172A;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #64748B;
+}
+.data-status .count { font-size: 22px; font-weight: 900; color: var(--sky); display: block; }
+
+/* MAIN */
+.main {
+  margin-right: 260px;
+  min-height: 100vh;
+  background: #F1F5F9;
+}
+
+/* TOP BAR */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar h2 { font-size: 20px; font-weight: 700; color: var(--ink); }
+.topbar-actions { display: flex; gap: 12px; align-items: center; }
+.month-filter {
+  padding: 8px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--cloud);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-left: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+.btn-import {
+  background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+  color: white;
+  border: none;
+  padding: 9px 20px;
+  border-radius: 10px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.2s;
+}
+.btn-import:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(14,165,233,0.4); }
+
+.content { padding: 28px 32px; }
+
+/* HERO SCORE CARDS */
+.score-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.hero-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.hero-card.nps-card {
+  background: linear-gradient(135deg, #0F172A, #1E3A5F);
+  color: white;
+  border-color: transparent;
+}
+.hero-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.hero-card.nps-card::before { background: linear-gradient(90deg, var(--sky), #38BDF8); }
+.hero-card.nbs-card::before { background: linear-gradient(90deg, var(--green), #34D399); }
+.hero-card.promo-card::before { background: linear-gradient(90deg, var(--green), #34D399); }
+.hero-card.detract-card::before { background: linear-gradient(90deg, var(--red), #F87171); }
+
+.card-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+}
+.nps-card .card-label { color: #94A3B8; }
+
+.card-value {
+  font-size: 48px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--ink);
+}
+.nps-card .card-value { color: white; }
+.card-value.positive { color: var(--green); }
+.card-value.negative { color: var(--red); }
+.card-value.warning { color: var(--gold); }
+
+.card-sub {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin-top: 8px;
+  font-family: 'Tajawal', sans-serif;
+}
+.nps-card .card-sub { color: #94A3B8; }
+
+.card-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16,185,129,0.12);
+  color: var(--green);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+.card-trend.down { background: rgba(239,68,68,0.12); color: var(--red); }
+
+.nps-segments {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.seg {
+  flex: 1;
+  min-width: 60px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+.seg-val { font-size: 20px; font-weight: 900; color: white; }
+.seg-label { font-size: 10px; color: #94A3B8; margin-top: 3px; }
+.seg.p-seg .seg-val { color: #34D399; }
+.seg.d-seg .seg-val { color: #F87171; }
+.seg.pa-seg .seg-val { color: #FCD34D; }
+
+/* CHARTS GRID */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.charts-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+.charts-grid.full { grid-template-columns: 1fr; }
+
+.chart-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.chart-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.chart-card .chart-sub {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin-bottom: 20px;
+  font-family: 'Tajawal', sans-serif;
+}
+.chart-wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* NBS AXES TABLE */
+.nbs-axes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.axis-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.axis-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  min-width: 150px;
+}
+.axis-bar-wrap {
+  flex: 1;
+  background: var(--cloud);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+.axis-bar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 1s ease;
+}
+.axis-score {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 38px;
+  text-align: left;
+}
+.axis-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 20px;
+  min-width: 90px;
+  text-align: center;
+}
+.badge-excellent { background: #D1FAE5; color: #059669; }
+.badge-good { background: #DBEAFE; color: #2563EB; }
+.badge-needs { background: #FEF9C3; color: #92400E; }
+.badge-danger { background: #FEE2E2; color: #DC2626; }
+
+/* COMMENTS TABLE */
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.comment-card {
+  background: var(--cloud);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+.comment-type {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+.comment-type.liked { color: var(--green); }
+.comment-type.improve { color: var(--gold); }
+.comment-type.manager { color: var(--purple); }
+.comment-text {
+  font-size: 13px;
+  color: var(--ink-soft);
+  font-family: 'Tajawal', sans-serif;
+  line-height: 1.6;
+}
+
+/* IMPORT MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,0.7);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  width: 90%;
+  max-width: 560px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.modal h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.modal p { font-size: 13px; color: var(--ink-muted); font-family: 'Tajawal', sans-serif; margin-bottom: 20px; line-height: 1.7; }
+.modal textarea {
+  width: 100%;
+  height: 200px;
+  padding: 14px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-family: monospace;
+  font-size: 12px;
+  resize: vertical;
+  direction: ltr;
+}
+.modal-actions { display: flex; gap: 12px; margin-top: 16px; justify-content: flex-end; }
+.btn-cancel {
+  padding: 10px 20px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: white;
+  font-family: 'Cairo', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.btn-load {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, var(--sky), var(--sky-dark));
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.demo-hint {
+  background: var(--sky-light);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 12px;
+  color: var(--sky-dark);
+  margin-bottom: 14px;
+  font-family: 'Tajawal', sans-serif;
+}
+
+/* Priority Improvements */
+.priority-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.priority-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--cloud);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.priority-rank {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px; flex-shrink: 0;
+}
+.rank-1 { background: #FEE2E2; color: var(--red); }
+.rank-2 { background: #FEF9C3; color: #92400E; }
+.rank-3 { background: #E0F2FE; color: var(--sky-dark); }
+.priority-info { flex: 1; }
+.priority-name { font-size: 14px; font-weight: 700; color: var(--ink); }
+.priority-score { font-size: 12px; color: var(--ink-muted); font-family: 'Tajawal', sans-serif; }
+.priority-score-val {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--red);
+  min-width: 50px;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .score-row { grid-template-columns: 1fr 1fr; }
+  .charts-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-right: 0; }
+  .content { padding: 20px 16px; }
+  .topbar { padding: 16px; }
+  .score-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">☁️</div>
+    <div>
+      <h1>Cloud Coworking</h1>
+      <span>Analytics Dashboard</span>
+    </div>
+  </div>
+
+  <div class="nav-section-label">التحليل</div>
+  <div class="nav-item active" onclick="scrollTo(0,0)"><span class="nav-icon">📊</span> النظرة العامة</div>
+  <div class="nav-item" onclick="scrollToSection('nbs-section')"><span class="nav-icon">⭐</span> تقييم المحاور NBS</div>
+  <div class="nav-item" onclick="scrollToSection('trends-section')"><span class="nav-icon">📈</span> تغيرات شهرية</div>
+  <div class="nav-item" onclick="scrollToSection('priority-section')"><span class="nav-icon">🎯</span> أولويات التحسين</div>
+  <div class="nav-item" onclick="scrollToSection('comments-section')"><span class="nav-icon">💬</span> آراء العملاء</div>
+
+  <div class="sidebar-footer">
+    <div class="data-status">
+      <span class="count" id="sidebarCount">0</span>
+      إجمالي الاستجابات
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="topbar">
+    <h2>📊 لوحة تحليلات الاستبيان</h2>
+    <div class="topbar-actions">
+      <select class="month-filter" id="monthFilter" onchange="filterByMonth()">
+        <option value="all">كل الأوقات</option>
+      </select>
+      <button class="btn-import" onclick="openImportModal()">📥 تحميل بيانات</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- HERO SCORES -->
+    <div class="score-row">
+      <!-- NPS CARD -->
+      <div class="hero-card nps-card">
+        <div class="card-label">Net Promoter Score</div>
+        <div class="card-value" id="npsDisplay">—</div>
+        <div class="card-sub" id="npsDesc">لا توجد بيانات بعد</div>
+        <div class="nps-segments">
+          <div class="seg p-seg">
+            <div class="seg-val" id="promotersPct">0%</div>
+            <div class="seg-label">Promoters</div>
+          </div>
+          <div class="seg pa-seg">
+            <div class="seg-val" id="passivesPct">0%</div>
+            <div class="seg-label">Passives</div>
+          </div>
+          <div class="seg d-seg">
+            <div class="seg-val" id="detractorsPct">0%</div>
+            <div class="seg-label">Detractors</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NBS CARD -->
+      <div class="hero-card nbs-card">
+        <div class="card-label">NBS العام</div>
+        <div class="card-value positive" id="nbsDisplay">—</div>
+        <div class="card-sub" id="nbsStatus">تصنيف الأداء العام</div>
+        <div class="card-trend" id="nbsTrend">متوسط جميع المحاور</div>
+      </div>
+
+      <!-- RESPONSES COUNT -->
+      <div class="hero-card">
+        <div class="card-label">إجمالي الاستجابات</div>
+        <div class="card-value" id="totalCount">0</div>
+        <div class="card-sub">استجابة مسجلة</div>
+      </div>
+
+      <!-- VALUE PERCEPTION -->
+      <div class="hero-card">
+        <div class="card-label">القيمة مقابل السعر</div>
+        <div class="card-value warning" id="valueDisplay">—</div>
+        <div class="card-sub">من أصل 5</div>
+      </div>
+    </div>
+
+    <!-- NPS DISTRIBUTION + RADAR -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>توزيع NPS</h3>
+        <div class="chart-sub">Promoters / Passives / Detractors</div>
+        <div class="chart-wrap" style="height:260px;">
+          <canvas id="npsChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>خريطة المحاور — Radar</h3>
+        <div class="chart-sub">متوسط كل محور من 5</div>
+        <div class="chart-wrap" style="height:260px;">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- NBS AXES DETAIL -->
+    <div class="chart-card" id="nbs-section" style="margin-bottom:24px;">
+      <h3>📊 تفصيل نقاط المحاور — NBS</h3>
+      <div class="chart-sub">متوسط التقييم لكل محور (1–5) مع تصنيف الأداء</div>
+      <div class="nbs-axes" id="nbsAxes">
+        <div style="text-align:center; color:var(--ink-muted); padding:40px; font-family:'Tajawal',sans-serif;">
+          لا توجد بيانات بعد — قم بتحميل بيانات أو استخدم البيانات التجريبية
+        </div>
+      </div>
+    </div>
+
+    <!-- TRENDS -->
+    <div class="chart-card" id="trends-section" style="margin-bottom:24px;">
+      <h3>📈 التغير الشهري</h3>
+      <div class="chart-sub">متابعة NPS و NBS شهرياً</div>
+      <div class="chart-wrap" style="height:300px;">
+        <canvas id="trendChart"></canvas>
+      </div>
+    </div>
+
+    <!-- PRIORITY IMPROVEMENTS + BREAKDOWN -->
+    <div class="charts-grid" id="priority-section">
+      <div class="chart-card">
+        <h3>🎯 أولويات التحسين</h3>
+        <div class="chart-sub">المحاور الأقل أداءً (يحتاج فعل فوري)</div>
+        <div class="priority-list" id="priorityList">
+          <div style="text-align:center; color:var(--ink-muted); padding:40px; font-family:'Tajawal',sans-serif;">لا توجد بيانات</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>📊 توزيع تقييم المحاور</h3>
+        <div class="chart-sub">مقارنة شاملة بين المحاور</div>
+        <div class="chart-wrap" style="height:280px;">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMENTS -->
+    <div class="chart-card" id="comments-section" style="margin-top:24px;">
+      <h3>💬 آراء العملاء المفتوحة</h3>
+      <div class="chart-sub">أحدث الاستجابات من العملاء</div>
+      <div class="comments-list" id="commentsList">
+        <div style="text-align:center; color:var(--ink-muted); padding:40px; font-family:'Tajawal',sans-serif;">لا توجد بيانات</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <h3>📥 تحميل بيانات الاستبيان</h3>
+    <p>يمكنك لصق بيانات JSON من Google Sheets أو استخدام البيانات التجريبية لاختبار Dashboard.</p>
+    <div class="demo-hint">
+      💡 <strong>للتجربة الفورية:</strong> اضغط "تحميل بيانات تجريبية" لرؤية الـ Dashboard يعمل بالكامل
+    </div>
+    <textarea id="jsonInput" placeholder='[{"nps": 9, "internet_0": 4, ...}, ...]' dir="ltr"></textarea>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
+      <button class="btn-cancel" onclick="loadDemo()" style="background:#F0FDF4; border-color:var(--green); color:var(--green);">🎭 بيانات تجريبية</button>
+      <button class="btn-load" onclick="loadJSON()">📊 تحميل وتحليل</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =============== CHART INSTANCES ===============
+let npsChart, radarChart, trendChart, barChart;
+
+// =============== DATA ===============
+let allData = [];
+let filteredData = [];
+
+// =============== SECTION DEFINITIONS ===============
+const SECTIONS = [
+  { key: 'internet', label: 'الإنترنت', emoji: '📡', keys: ['internet_0','internet_1','internet_2'] },
+  { key: 'chairs', label: 'الكراسي', emoji: '🪑', keys: ['chairs_0','chairs_1','chairs_2'] },
+  { key: 'vibe', label: 'الأجواء', emoji: '🌿', keys: ['vibe_0','vibe_1','vibe_2','vibe_3'] },
+  { key: 'staff', label: 'خدمة العملاء', emoji: '👨‍💼', keys: ['staff_0','staff_1','staff_2','staff_3'] },
+  { key: 'catering', label: 'الكاترينج', emoji: '☕', keys: ['catering_0','catering_1','catering_2','catering_3','catering_4'] },
+  { key: 'clean', label: 'النظافة', emoji: '✨', keys: ['clean_0','clean_1','clean_2','clean_3'] },
+];
+
+const COLORS = {
+  internet: '#0EA5E9',
+  chairs: '#F59E0B',
+  vibe: '#10B981',
+  staff: '#8B5CF6',
+  catering: '#F97316',
+  clean: '#06B6D4',
+};
+
+// =============== ANALYTICS ENGINE ===============
+function calcNPS(data) {
+  if (!data.length) return null;
+  const valid = data.filter(d => d.nps != null);
+  if (!valid.length) return null;
+  const promoters = valid.filter(d => d.nps >= 9).length;
+  const detractors = valid.filter(d => d.nps <= 6).length;
+  const passives = valid.length - promoters - detractors;
+  return {
+    score: Math.round((promoters/valid.length - detractors/valid.length) * 100),
+    promotersPct: Math.round(promoters/valid.length*100),
+    passivesPct: Math.round(passives/valid.length*100),
+    detractorsPct: Math.round(detractors/valid.length*100),
+    promoters, passives, detractors, total: valid.length
+  };
+}
+
+function calcSectionAvg(data, keys) {
+  if (!data.length) return 0;
+  let sum = 0, count = 0;
+  data.forEach(d => {
+    keys.forEach(k => {
+      const v = parseFloat(d[k]);
+      if (v > 0) { sum += v; count++; }
+    });
+  });
+  return count ? (sum/count) : 0;
+}
+
+function getStatus(score) {
+  if (score >= 4.5) return { label: 'ممتاز تنافسي', cls: 'badge-excellent' };
+  if (score >= 4.0) return { label: 'قوي', cls: 'badge-good' };
+  if (score >= 3.0) return { label: 'يحتاج تحسين', cls: 'badge-needs' };
+  return { label: 'خطر تشغيلي', cls: 'badge-danger' };
+}
+
+function calcNBSScores(data) {
+  return SECTIONS.map(s => ({
+    ...s,
+    avg: parseFloat(calcSectionAvg(data, s.keys).toFixed(2))
+  }));
+}
+
+function calcMonthlyData(data) {
+  const byMonth = {};
+  data.forEach(d => {
+    const m = d.month || new Date(d.timestamp).toLocaleDateString('ar-EG', { year:'numeric', month:'long'});
+    if (!byMonth[m]) byMonth[m] = [];
+    byMonth[m].push(d);
+  });
+  return Object.entries(byMonth).map(([month, records]) => {
+    const npsData = calcNPS(records);
+    const nbsScores = calcNBSScores(records);
+    const nbsAvg = nbsScores.reduce((a,b) => a+b.avg, 0) / nbsScores.length;
+    return { month, nps: npsData ? npsData.score : null, nbs: parseFloat(nbsAvg.toFixed(2)), count: records.length };
+  });
+}
+
+// =============== RENDER ===============
+function renderDashboard(data) {
+  const nps = calcNPS(data);
+  const nbsScores = calcNBSScores(data);
+  const nbsAvg = nbsScores.reduce((a,b) => a+b.avg, 0) / nbsScores.length;
+  const valuePriceAvg = calcSectionAvg(data, ['value_price']);
+
+  // Update KPI cards
+  if (nps) {
+    const el = document.getElementById('npsDisplay');
+    el.textContent = (nps.score > 0 ? '+' : '') + nps.score;
+    el.className = 'card-value ' + (nps.score >= 50 ? 'positive' : nps.score >= 0 ? 'warning' : 'negative');
+    document.getElementById('npsDesc').textContent = nps.score >= 50 ? 'ممتاز — ولاء قوي جداً' : nps.score >= 0 ? 'جيد — هناك مجال للتطوير' : 'يحتاج تدخل فوري';
+    document.getElementById('promotersPct').textContent = nps.promotersPct + '%';
+    document.getElementById('passivesPct').textContent = nps.passivesPct + '%';
+    document.getElementById('detractorsPct').textContent = nps.detractorsPct + '%';
+  }
+
+  const nbsFixed = parseFloat(nbsAvg.toFixed(2));
+  const nbsStatus = getStatus(nbsFixed);
+  document.getElementById('nbsDisplay').textContent = nbsFixed || '—';
+  document.getElementById('nbsStatus').textContent = nbsStatus.label;
+  document.getElementById('totalCount').textContent = data.length;
+  document.getElementById('sidebarCount').textContent = data.length;
+  document.getElementById('valueDisplay').textContent = valuePriceAvg ? valuePriceAvg.toFixed(1) : '—';
+
+  // NPS Donut
+  renderNPSChart(nps);
+  // Radar
+  renderRadar(nbsScores);
+  // Axes
+  renderNBSAxes(nbsScores);
+  // Priority
+  renderPriority(nbsScores);
+  // Bar
+  renderBar(nbsScores);
+  // Trends
+  renderTrends(allData);
+  // Comments
+  renderComments(data);
+}
+
+function renderNPSChart(nps) {
+  const ctx = document.getElementById('npsChart').getContext('2d');
+  if (npsChart) npsChart.destroy();
+  if (!nps) return;
+  npsChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Promoters (9-10)', 'Passives (7-8)', 'Detractors (0-6)'],
+      datasets: [{
+        data: [nps.promoters, nps.passives, nps.detractors],
+        backgroundColor: ['#10B981','#F59E0B','#EF4444'],
+        borderWidth: 0,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { family: 'Cairo', size: 12 }, padding: 16, usePointStyle: true }
+        }
+      },
+      cutout: '65%'
+    }
+  });
+}
+
+function renderRadar(scores) {
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  if (radarChart) radarChart.destroy();
+  radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: scores.map(s => s.emoji + ' ' + s.label),
+      datasets: [{
+        label: 'متوسط التقييم',
+        data: scores.map(s => s.avg),
+        backgroundColor: 'rgba(14,165,233,0.15)',
+        borderColor: '#0EA5E9',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#0EA5E9',
+        pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          min: 0, max: 5,
+          ticks: { stepSize: 1, font: { family: 'Cairo', size: 10 } },
+          grid: { color: '#E2E8F0' },
+          pointLabels: { font: { family: 'Cairo', size: 11 }, color: '#334155' }
+        }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+function renderNBSAxes(scores) {
+  const container = document.getElementById('nbsAxes');
+  container.innerHTML = '';
+  scores.forEach(s => {
+    const status = getStatus(s.avg);
+    const pct = (s.avg / 5) * 100;
+    const color = COLORS[s.key] || '#0EA5E9';
+    const row = document.createElement('div');
+    row.className = 'axis-row';
+    row.innerHTML = `
+      <div class="axis-name">${s.emoji} ${s.label}</div>
+      <div class="axis-bar-wrap">
+        <div class="axis-bar" style="width:${pct}%;background:${color};"></div>
+      </div>
+      <div class="axis-score" style="color:${color};">${s.avg}</div>
+      <div class="axis-badge ${status.cls}">${status.label}</div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function renderPriority(scores) {
+  const sorted = [...scores].sort((a,b) => a.avg - b.avg);
+  const top3 = sorted.slice(0, 3);
+  const container = document.getElementById('priorityList');
+  container.innerHTML = '';
+  top3.forEach((s, i) => {
+    const status = getStatus(s.avg);
+    const item = document.createElement('div');
+    item.className = 'priority-item';
+    item.innerHTML = `
+      <div class="priority-rank rank-${i+1}">${i+1}</div>
+      <div class="priority-info">
+        <div class="priority-name">${s.emoji} ${s.label}</div>
+        <div class="priority-score">${status.label}</div>
+      </div>
+      <div class="priority-score-val" style="color:${s.avg<3?'#EF4444':s.avg<4?'#F59E0B':'#10B981'}">${s.avg}</div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+function renderBar(scores) {
+  const ctx = document.getElementById('barChart').getContext('2d');
+  if (barChart) barChart.destroy();
+  barChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: scores.map(s => s.emoji + ' ' + s.label),
+      datasets: [{
+        label: 'المتوسط',
+        data: scores.map(s => s.avg),
+        backgroundColor: scores.map(s => COLORS[s.key] || '#0EA5E9'),
+        borderRadius: 8,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => 'متوسط: ' + ctx.parsed.y + ' / 5' } }
+      },
+      scales: {
+        y: {
+          min: 0, max: 5,
+          grid: { color: '#F1F5F9' },
+          ticks: { font: { family: 'Cairo', size: 11 } }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'Cairo', size: 10 } }
+        }
+      }
+    }
+  });
+}
+
+function renderTrends(data) {
+  const monthly = calcMonthlyData(data);
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  if (trendChart) trendChart.destroy();
+  if (!monthly.length) return;
+  trendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: monthly.map(m => m.month),
+      datasets: [
+        {
+          label: 'NPS Score',
+          data: monthly.map(m => m.nps),
+          borderColor: '#0EA5E9',
+          backgroundColor: 'rgba(14,165,233,0.1)',
+          borderWidth: 3,
+          pointRadius: 6,
+          tension: 0.4,
+          fill: true,
+          yAxisID: 'y1'
+        },
+        {
+          label: 'NBS Score',
+          data: monthly.map(m => m.nbs),
+          borderColor: '#10B981',
+          backgroundColor: 'rgba(16,185,129,0.08)',
+          borderWidth: 3,
+          pointRadius: 6,
+          tension: 0.4,
+          fill: true,
+          yAxisID: 'y2'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { font: { family: 'Cairo', size: 12 }, usePointStyle: true } }
+      },
+      scales: {
+        y1: {
+          type: 'linear',
+          position: 'left',
+          min: -100, max: 100,
+          grid: { color: '#F1F5F9' },
+          ticks: { font: { family: 'Cairo', size: 11 } },
+          title: { display: true, text: 'NPS', font: { family: 'Cairo' } }
+        },
+        y2: {
+          type: 'linear',
+          position: 'right',
+          min: 0, max: 5,
+          grid: { display: false },
+          ticks: { font: { family: 'Cairo', size: 11 } },
+          title: { display: true, text: 'NBS', font: { family: 'Cairo' } }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'Cairo', size: 11 } }
+        }
+      }
+    }
+  });
+}
+
+function renderComments(data) {
+  const container = document.getElementById('commentsList');
+  const recent = data.filter(d => d.liked_most || d.needs_improvement || d.if_manager).slice(-6);
+  if (!recent.length) {
+    container.innerHTML = '<div style="text-align:center;color:var(--ink-muted);padding:40px;font-family:Tajawal,sans-serif;">لا توجد تعليقات</div>';
+    return;
+  }
+  container.innerHTML = '';
+  recent.reverse().forEach(d => {
+    if (d.liked_most) {
+      const el = document.createElement('div');
+      el.className = 'comment-card';
+      el.innerHTML = `<div class="comment-type liked">✅ أعجبني</div><div class="comment-text">${d.liked_most}</div>`;
+      container.appendChild(el);
+    }
+    if (d.needs_improvement) {
+      const el = document.createElement('div');
+      el.className = 'comment-card';
+      el.innerHTML = `<div class="comment-type improve">🔧 يحتاج تحسين</div><div class="comment-text">${d.needs_improvement}</div>`;
+      container.appendChild(el);
+    }
+    if (d.if_manager) {
+      const el = document.createElement('div');
+      el.className = 'comment-card';
+      el.innerHTML = `<div class="comment-type manager">👔 لو كنت المدير</div><div class="comment-text">${d.if_manager}</div>`;
+      container.appendChild(el);
+    }
+  });
+}
+
+// =============== MONTH FILTER ===============
+function populateMonthFilter(data) {
+  const select = document.getElementById('monthFilter');
+  const months = [...new Set(data.map(d => d.month || new Date(d.timestamp).toLocaleDateString('ar-EG', {year:'numeric',month:'long'})))];
+  select.innerHTML = '<option value="all">كل الأوقات</option>';
+  months.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = m;
+    select.appendChild(opt);
+  });
+}
+
+function filterByMonth() {
+  const val = document.getElementById('monthFilter').value;
+  filteredData = val === 'all' ? allData : allData.filter(d => {
+    const m = d.month || new Date(d.timestamp).toLocaleDateString('ar-EG', {year:'numeric',month:'long'});
+    return m === val;
+  });
+  renderDashboard(filteredData);
+}
+
+// =============== MODAL ===============
+function openImportModal() {
+  document.getElementById('importModal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('importModal').classList.remove('show');
+}
+
+function loadJSON() {
+  try {
+    const raw = document.getElementById('jsonInput').value.trim();
+    const data = JSON.parse(raw);
+    setData(data);
+    closeModal();
+  } catch(e) {
+    alert('خطأ في صيغة JSON — تأكد من صحة البيانات');
+  }
+}
+
+function setData(data) {
+  allData = data;
+  filteredData = data;
+  populateMonthFilter(data);
+  renderDashboard(data);
+}
+
+// =============== DEMO DATA ===============
+function loadDemo() {
+  const months = ['يناير 2025','فبراير 2025','مارس 2025','أبريل 2025','مايو 2025'];
+  const data = [];
+  const liked = ['الهدوء والتركيز', 'الكافيه ممتاز', 'الإنترنت سريع جداً', 'موقع المكان ممتاز', 'التصميم الداخلي جميل', 'الموظفين محترمين'];
+  const improve = ['نرجو تحسين التكييف', 'الكراسي تحتاج تحديث', 'أسعار القهوة عالية', 'يحتاج المزيد من الطاولات الخاصة', 'التهوية ضعيفة في المساء'];
+  const manager = ['أضيف غرف عزل للمكالمات', 'أحسن نظام الحجز الإلكتروني', 'أوفر قهوة مجانية للأعضاء', 'أعمل بطاقة اشتراك شهرية بسعر مخفض'];
+
+  months.forEach((month, mi) => {
+    const count = 15 + Math.floor(Math.random() * 20);
+    for (let i = 0; i < count; i++) {
+      const nps = Math.random() < 0.5 ? (9 + Math.floor(Math.random()*2)) : (Math.random() < 0.3 ? Math.floor(Math.random()*7) : (7 + Math.floor(Math.random()*2)));
+      data.push({
+        timestamp: new Date(2025, mi, 1 + Math.floor(Math.random()*28)).toISOString(),
+        month,
+        nps,
+        internet_0: 3 + Math.floor(Math.random()*3),
+        internet_1: 3 + Math.floor(Math.random()*3),
+        internet_2: 2 + Math.floor(Math.random()*3),
+        chairs_0: 3 + Math.floor(Math.random()*3),
+        chairs_1: 3 + Math.floor(Math.random()*3),
+        chairs_2: 3 + Math.floor(Math.random()*3),
+        vibe_0: 4 + Math.floor(Math.random()*2),
+        vibe_1: 4 + Math.floor(Math.random()*2),
+        vibe_2: 3 + Math.floor(Math.random()*2),
+        vibe_3: 3 + Math.floor(Math.random()*3),
+        staff_0: 4 + Math.floor(Math.random()*2),
+        staff_1: 4 + Math.floor(Math.random()*2),
+        staff_2: 4 + Math.floor(Math.random()*2),
+        staff_3: 4 + Math.floor(Math.random()*2),
+        catering_0: 3 + Math.floor(Math.random()*2),
+        catering_1: 2 + Math.floor(Math.random()*3),
+        catering_2: 3 + Math.floor(Math.random()*2),
+        catering_3: 2 + Math.floor(Math.random()*3),
+        catering_4: 3 + Math.floor(Math.random()*2),
+        clean_0: 4 + Math.floor(Math.random()*2),
+        clean_1: 4 + Math.floor(Math.random()*2),
+        clean_2: 3 + Math.floor(Math.random()*3),
+        clean_3: 4 + Math.floor(Math.random()*2),
+        value_price: 3 + Math.floor(Math.random()*3),
+        liked_most: Math.random() > 0.4 ? liked[Math.floor(Math.random()*liked.length)] : '',
+        needs_improvement: Math.random() > 0.5 ? improve[Math.floor(Math.random()*improve.length)] : '',
+        if_manager: Math.random() > 0.6 ? manager[Math.floor(Math.random()*manager.length)] : '',
+      });
+    }
+  });
+  document.getElementById('jsonInput').value = JSON.stringify(data.slice(0,3), null, 2) + '\n// ... ' + data.length + ' records total';
+  setData(data);
+  closeModal();
+}
+
+// =============== HELPERS ===============
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// =============== INIT ===============
+// Load from localStorage (from form submissions)
+const stored = JSON.parse(localStorage.getItem('survey_responses') || '[]');
+if (stored.length > 0) {
+  setData(stored);
+} else {
+  // Show empty state - invite user to load demo
+  document.getElementById('totalCount').textContent = '0';
+  document.getElementById('sidebarCount').textContent = '0';
+}
+</script>
+</body>
+</html>
