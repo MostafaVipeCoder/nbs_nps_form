@@ -1,11 +1,11 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import SurveyForm from './pages/SurveyForm.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import PasswordGate from './components/PasswordGate.jsx'
 
 export default function App() {
     return (
-        <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <HashRouter>
             <Routes>
                 <Route path="/" element={<SurveyForm />} />
                 <Route
@@ -17,6 +17,6 @@ export default function App() {
                     }
                 />
             </Routes>
-        </BrowserRouter>
+        </HashRouter>
     )
 }
